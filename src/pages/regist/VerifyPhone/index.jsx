@@ -66,6 +66,8 @@ class VerifyPhone extends Component {
       // const value2 = this.props.form.getFieldsValue();
       const result = await reqVerifyPhone(phone);
 
+      console.log("success");
+
       // 请求成功 - 手机号不存在
       // 提示弹框 - 确认请求短信验证码
     } catch (e) {
@@ -103,6 +105,7 @@ class VerifyPhone extends Component {
               </div>
             </InputItem>
           </div>
+
           <VerifyButton disabled={isDisabled} callback={this.verifyPhone} />
         </WingBlank>
       </div>
