@@ -9,7 +9,7 @@ import "./index.css";
 
 class VerifyPhone extends Component {
   state = {
-    isDisabled: true,
+    isDisabled: true, // 控制按钮显示哪个
   };
 
   componentDidMount() {
@@ -37,6 +37,7 @@ class VerifyPhone extends Component {
   }
 
   // 当用户输入数据时就会触发
+  // 表单验证
   validator = (rule, value, callback) => {
     // console.log(rule, value);
 
@@ -58,16 +59,16 @@ class VerifyPhone extends Component {
     callback();
   };
 
+  // 验证用户手机号是否注册过
   verifyPhone = async () => {
     try {
       // 获取单个表单项的值
       const phone = this.props.form.getFieldValue("phone");
       // 获取所有表单项的值
       // const value2 = this.props.form.getFieldsValue();
-      const result = await reqVerifyPhone(phone);
+      await reqVerifyPhone(phone);
 
       console.log("success");
-
       // 请求成功 - 手机号不存在
       // 提示弹框 - 确认请求短信验证码
     } catch (e) {
@@ -78,6 +79,7 @@ class VerifyPhone extends Component {
 
   render() {
     const { isDisabled } = this.state;
+    // form属性：由createForm高阶组件传递而来
     const { getFieldProps } = this.props.form;
 
     return (
@@ -105,8 +107,11 @@ class VerifyPhone extends Component {
               </div>
             </InputItem>
           </div>
-
-          <VerifyButton disabled={isDisabled} callback={this.verifyPhone} />
+          <VerifyButton
+            disabled={isDisabled}
+            callback={this.verifyPhone}
+            btnText="下一步"
+          />
         </WingBlank>
       </div>
     );
