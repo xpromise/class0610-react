@@ -1,38 +1,65 @@
 import React, { Component } from "react";
-import { NavBar, Icon, InputItem, WingBlank, Button, Modal } from "antd-mobile";
+import {
+  NavBar,
+  Icon,
+  InputItem,
+  WingBlank,
+  Button,
+  Modal,
+  Toast,
+} from "antd-mobile";
 import { createForm } from "rc-form";
 import { reqVerifyPhone } from "@api/regist";
+import { reqVerifyCode } from "@api/common";
 
 import "./index.css";
+
+// web端接入文档：https://cloud.tencent.com/document/product/1110/36841#.E5.AE.9E.E4.BE.8B.E6.96.B9.E6.B3.95
+const verifyBtnProps = {
+  id: "TencentCaptcha",
+  "data-appid": "2030765311",
+  "data-cbfn": "verifyCallback",
+};
 
 class VerifyPhone extends Component {
   state = {
     isDisabled: true,
   };
 
-  // componentDidMount() {
-  //   Modal.alert(
-  //     "注册协议及隐私政策",
-  //     <span className="policy-text">
-  //       在您注册成为硅谷用户的过程中，您需要完成我们的注册流程并通过点击同意的形式在线签署以下协议，
-  //       <strong className="policy-strong-text">
-  //         请您务必仔细阅读、充分理解协议中的条款内容后再点击同意（尤其是以粗体并下划线标识的条款，因为这些条款可能会明确您应履行的义务或对您的权利有所限制）
-  //       </strong>
-  //       ：<span className="policy-content">《硅谷用户注册协议》</span>
-  //       <span className="policy-content">《硅谷隐私政策》</span>
-  //     </span>,
-  //     [
-  //       {
-  //         text: "不同意",
-  //         onPress: () => console.log("cancel"),
-  //       },
-  //       {
-  //         text: "同意",
-  //         style: { backgroundColor: "red", color: "#fff" },
-  //       },
-  //     ]
-  //   );
-  // }
+  componentDidMount() {
+    // Modal.alert(
+    //   "注册协议及隐私政策",
+    //   <span className="policy-text">
+    //     在您注册成为硅谷用户的过程中，您需要完成我们的注册流程并通过点击同意的形式在线签署以下协议，
+    //     <strong className="policy-strong-text">
+    //       请您务必仔细阅读、充分理解协议中的条款内容后再点击同意（尤其是以粗体并下划线标识的条款，因为这些条款可能会明确您应履行的义务或对您的权利有所限制）
+    //     </strong>
+    //     ：<span className="policy-content">《硅谷用户注册协议》</span>
+    //     <span className="policy-content">《硅谷隐私政策》</span>
+    //   </span>,
+    //   [
+    //     {
+    //       text: "不同意",
+    //       onPress: () => console.log("cancel"),
+    //     },
+    //     {
+    //       text: "同意",
+    //       style: { backgroundColor: "red", color: "#fff" },
+    //     },
+    //   ]
+    // );
+
+    window.verifyCallback = async (res) => {
+      // console.log(res);
+      if (res.ret === 0) {
+        // 验证成功 客户端验证成功，还需要进行二次验证，服务端验证
+        await reqVerifyCode(res.randstr, res.ticket);
+
+        // 服务端验证通过 - 验证手机号
+        await this.verifyPhone();
+      }
+    };
+  }
 
   // 当用户输入数据时就会触发
   validator = (rule, value, callback) => {
@@ -56,7 +83,7 @@ class VerifyPhone extends Component {
     callback();
   };
 
-  next = async () => {
+  verifyPhone = async () => {
     try {
       // 获取单个表单项的值
       const phone = this.props.form.getFieldValue("phone");
@@ -64,12 +91,11 @@ class VerifyPhone extends Component {
       // const value2 = this.props.form.getFieldsValue();
       const result = await reqVerifyPhone(phone);
 
-      // 请求成功
-      console.log("success", result);
+      // 请求成功 - 手机号不存在
+      // 提示弹框 - 确认请求短信验证码
     } catch (e) {
-      // 请求失败
-
-      console.log("err", e);
+      // 请求失败 - 手机号存在
+      Toast.fail(e, 3);
     }
   };
 
@@ -103,10 +129,18 @@ class VerifyPhone extends Component {
             </InputItem>
           </div>
           <Button
-            onClick={this.next}
+            style={{ display: isDisabled ? "block" : "none" }}
             className="warning-btn"
             type="warning"
-            disabled={isDisabled}
+            disabled
+          >
+            下一步
+          </Button>
+          <Button
+            style={{ display: !isDisabled ? "block" : "none" }}
+            {...verifyBtnProps}
+            className="warning-btn"
+            type="warning"
           >
             下一步
           </Button>
