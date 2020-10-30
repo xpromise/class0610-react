@@ -74,7 +74,7 @@ class VerifyPhone extends Component {
           // 发送请求 请求短信验证码
           await reqSendCode(phone);
 
-          this.props.history.push("/regist/verifycode");
+          this.props.history.push("/regist/verifycode", phone);
         },
       },
     ]);
@@ -82,22 +82,16 @@ class VerifyPhone extends Component {
 
   // 验证用户手机号是否注册过
   verifyPhone = async () => {
-    try {
-      // 获取单个表单项的值
-      const phone = this.props.form.getFieldValue("phone");
-      // 获取所有表单项的值
-      // const value2 = this.props.form.getFieldsValue();
-      await reqVerifyPhone(phone);
+    // 获取单个表单项的值
+    const phone = this.props.form.getFieldValue("phone");
+    // 获取所有表单项的值
+    // const value2 = this.props.form.getFieldsValue();
+    await reqVerifyPhone(phone);
 
-      console.log("success");
-      // 请求成功 - 手机号不存在
-      // 提示弹框 - 确认请求短信验证码
-      this.sendCode(phone);
-    } catch (e) {
-      if (e === "fail") return;
-      // 请求失败 - 手机号存在
-      Toast.fail(e, 3);
-    }
+    console.log("success");
+    // 请求成功 - 手机号不存在
+    // 提示弹框 - 确认请求短信验证码
+    this.sendCode(phone);
   };
 
   render() {
