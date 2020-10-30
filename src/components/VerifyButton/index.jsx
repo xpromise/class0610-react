@@ -17,14 +17,10 @@ export default class VerifyButton extends Component {
     window.verifyCallback = async (res) => {
       // console.log(res);
       if (res.ret === 0) {
-        try {
-          // 服务端验证
-          await reqVerifyCode(res.randstr, res.ticket);
-          // 做其他事
-          this.props.callback();
-        } catch (e) {
-          Toast.fail(e, 3);
-        }
+        // 服务端验证
+        await reqVerifyCode(res.randstr, res.ticket);
+        // 做其他事
+        this.props.callback();
       }
     };
   }
