@@ -94,13 +94,19 @@ class VerifyPhone extends Component {
     this.sendCode(phone);
   };
 
+  goCountryPicker = () => {
+    this.props.history.push("/common/countrypicker", "/regist/verifyphone");
+  };
+
   render() {
     const { isDisabled } = this.state;
     // form属性：由createForm高阶组件传递而来
     const { getFieldProps } = this.props.form;
 
+    const number = this.props.location.state || "+86";
+
     return (
-      <div>
+      <div className="verify-phone">
         <NavBar
           mode="light"
           icon={<Icon className="left" type="left" />}
@@ -118,8 +124,11 @@ class VerifyPhone extends Component {
               clear
               placeholder="请输入手机号"
             >
-              <div className="verify-phone-prefix">
-                <span>+86</span>
+              <div
+                className="verify-phone-prefix"
+                onTouchEnd={this.goCountryPicker}
+              >
+                <span>{number}</span>
                 <Icon type="down" />
               </div>
             </InputItem>

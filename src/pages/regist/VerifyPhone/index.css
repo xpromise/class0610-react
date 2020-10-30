@@ -1,4 +1,8 @@
-
+.verify-phone {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+}
 
 .verify-phone-input {
   margin-top: 30px;
