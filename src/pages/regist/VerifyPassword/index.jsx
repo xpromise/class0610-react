@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { NavBar, Icon, WingBlank, InputItem, Button, Modal } from "antd-mobile";
 import { createForm } from "rc-form";
 import { reqRegistUser } from "@api/regist";
+import { passwordReg } from "@utils/reg";
 
 import msg from "@assets/imgs/msg.png";
 import "./index.css";
@@ -20,9 +21,8 @@ function VerifyPassword({ form, location, history }) {
   };
 
   const validator = (rule, value, callback) => {
-    const reg = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^]{8,20}$/;
     let isDisabled = true;
-    if (reg.test(value)) {
+    if (passwordReg.test(value)) {
       isDisabled = false;
     }
     setIsDisabled(isDisabled);

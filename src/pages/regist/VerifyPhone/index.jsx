@@ -5,6 +5,7 @@ import { reqVerifyPhone } from "@api/regist";
 import { reqSendCode } from "@api/login";
 
 import VerifyButton from "@comps/VerifyButton";
+import { phoneReg } from "@utils/reg";
 
 import "./index.css";
 
@@ -42,11 +43,9 @@ class VerifyPhone extends Component {
   validator = (rule, value, callback) => {
     // console.log(rule, value);
 
-    const reg = /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57]|199)[0-9]{8}$/;
-
     let isDisabled = true;
 
-    if (reg.test(value)) {
+    if (phoneReg.test(value)) {
       isDisabled = false;
     }
 
@@ -88,7 +87,7 @@ class VerifyPhone extends Component {
     // const value2 = this.props.form.getFieldsValue();
     await reqVerifyPhone(phone);
 
-    console.log("success");
+    // console.log("success");
     // 请求成功 - 手机号不存在
     // 提示弹框 - 确认请求短信验证码
     this.sendCode(phone);

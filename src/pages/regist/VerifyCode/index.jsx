@@ -3,6 +3,7 @@ import { NavBar, Icon, WingBlank, InputItem, Button, Modal } from "antd-mobile";
 import { createForm } from "rc-form";
 import { reqSendCode } from "@api/login";
 import { reqVerifyCode } from "@api/regist";
+import { codeReg } from "@utils/reg";
 
 import msg from "@assets/imgs/msg.png";
 import "./index.css";
@@ -76,11 +77,10 @@ class VerifyCode extends Component {
 
   // 验证表单
   validator = (rule, value, callback) => {
-    const reg = /^[0-9]{6}$/;
 
     let isDisabled = true;
 
-    if (reg.test(value)) {
+    if (codeReg.test(value)) {
       isDisabled = false;
     }
 
