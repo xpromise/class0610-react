@@ -37,12 +37,16 @@ function VerifyPassword({ form, location, history }) {
     history.push("/login");
   };
 
+  const goBack = () => {
+    history.goBack();
+  };
+
   return (
-    <div>
+    <div className="verify-password">
       <NavBar
         mode="light"
         icon={<Icon className="left" type="left" />}
-        // onLeftClick={this.goBack}
+        onLeftClick={goBack}
       >
         硅谷注册
       </NavBar>

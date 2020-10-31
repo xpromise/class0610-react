@@ -112,7 +112,7 @@ class VerifyCode extends Component {
     const btntext = isSendCode ? `重新发送(${time}s)` : "获取验证码";
 
     return (
-      <div>
+      <div className="verify-code">
         <NavBar
           mode="light"
           icon={<Icon className="left" type="left" />}

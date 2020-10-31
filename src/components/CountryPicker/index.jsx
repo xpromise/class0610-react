@@ -67,6 +67,7 @@ export default class CountryPicker extends Component {
                   // item {"赤道几内亚": "240"}
                   const key = Object.keys(item)[0];
                   const value = "+" + item[key];
+                  
                   return (
                     <Item
                       onClick={this.goBack(value)}
