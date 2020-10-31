@@ -11,34 +11,55 @@ import {
 import { Link } from "react-router-dom";
 import { createForm } from "rc-form";
 import { phoneReg, codeReg } from "@utils/reg";
-import { reqSendCode } from "@api/login";
+import { reqSendCode, reqLogin } from "@api/login";
+import { reqVerifyPhone, reqVerifyCode } from "@api/regist";
 
 import "./index.css";
 
-const TOTAL_TIME = 6;
+const TOTAL_TIME = 60;
 
 class Login extends Component {
   state = {
+    isDisabledLoginBtn: true,
     isDisabledGetCode: true,
     // 决定是否显示获取验证码
-    isSendCode: false,
+    isShowSendCode: false,
     time: TOTAL_TIME,
+    // 是否发送过验证码
+    hasSendCode: false,
   };
 
   validator = (rule, value, callback) => {
-    let isDisabledGetCode = true;
+    // console.log(rule);
 
-    if (phoneReg.test(value)) {
-      isDisabledGetCode = false;
+    if (rule.field === "phone") {
+      // 手机号
+      let isDisabledGetCode = true;
+
+      if (phoneReg.test(value)) {
+        isDisabledGetCode = false;
+      }
+
+      this.setState({
+        isDisabledGetCode,
+      });
+    } else {
+      // 验证码
+      let isDisabledLoginBtn = true;
+
+      if (codeReg.test(value)) {
+        isDisabledLoginBtn = false;
+      }
+
+      this.setState({
+        isDisabledLoginBtn,
+      });
     }
-
-    this.setState({
-      isDisabledGetCode,
-    });
 
     callback();
   };
 
+  // 跳转到城市选择器
   goCountry = () => {
     this.props.history.push("/common/countrypicker", "/login");
   };
@@ -52,8 +73,9 @@ class Login extends Component {
     await reqSendCode(phone);
 
     this.setState({
-      isSendCode: true,
+      isShowSendCode: true,
       isDisabledGetCode: true,
+      hasSendCode: true,
     });
 
     this.timer = setInterval(() => {
@@ -64,7 +86,7 @@ class Login extends Component {
 
         this.setState({
           time: TOTAL_TIME,
-          isSendCode: false,
+          isShowSendCode: false,
           isDisabledGetCode: false,
         });
         return;
@@ -80,13 +102,39 @@ class Login extends Component {
     clearInterval(this.timer);
   }
 
+  loginOrRegist = () => {
+    const { phone, code } = this.props.form.getFieldsValue();
+
+    // 验证手机号是否注册
+    reqVerifyPhone(phone)
+      .then(async () => {
+        // 没有注册过
+        // 验证验证码是否正确
+        await reqVerifyCode(phone, code);
+        // 跳转设置密码页面完成注册 -- 自动登录(跳转首页)
+        this.props.history.push("/regist/verifyPassword", phone);
+      })
+      .catch(async () => {
+        // 注册过
+        await reqLogin(phone, code);
+        // 登录
+        this.props.history.push("/");
+      });
+  };
+
   render() {
     const {
       form: { getFieldProps },
       location: { state },
     } = this.props;
 
-    const { isDisabledGetCode, isSendCode, time } = this.state;
+    const {
+      isDisabledGetCode,
+      isShowSendCode,
+      time,
+      isDisabledLoginBtn,
+      hasSendCode,
+    } = this.state;
 
     const number = state || "+86";
 
@@ -137,12 +185,17 @@ class Login extends Component {
                 color: isDisabledGetCode ? "#848689" : "red",
               }}
             >
-              {isSendCode ? `重新获取(${time}s)` : "获取验证码"}
+              {isShowSendCode ? `重新获取(${time}s)` : "获取验证码"}
             </button>
           </div>
           <WhiteSpace size="lg" />
           <WingBlank size="lg">
-            <Button type="warning" className="warning-btn">
+            <Button
+              disabled={isDisabledLoginBtn || !hasSendCode}
+              type="warning"
+              className="warning-btn"
+              onClick={this.loginOrRegist}
+            >
               登录
             </Button>
           </WingBlank>

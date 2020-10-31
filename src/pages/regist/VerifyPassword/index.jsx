@@ -34,7 +34,7 @@ function VerifyPassword({ form, location, history }) {
     const phone = location.state;
     const password = getFieldValue("password");
     await reqRegistUser(phone, password);
-    history.push("/login");
+    history.push("/");
   };
 
   const goBack = () => {
