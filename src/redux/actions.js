@@ -1,4 +1,4 @@
-import { reqLoginUser } from "@api/login";
+import { reqLoginUser, reqVerifyToken } from "@api/login";
 import { GET_USER_SUCCESS } from "./contants";
 // 同步action
 const getUserSuccess = (user) => ({ type: GET_USER_SUCCESS, data: user });
@@ -11,5 +11,19 @@ export const getUser = (phone, password) => {
     // 调用dispatch方法触发redux更新
     const action = getUserSuccess(result.user);
     dispatch(action);
+    return result.user.token;
+  };
+};
+
+// 异步action
+export const verifyToken = () => {
+  return async (dispatch) => {
+    try {
+      const user = await reqVerifyToken();
+      const action = getUserSuccess(user);
+      dispatch(action);
+    } catch (e) {
+      return e;
+    }
   };
 };

@@ -53,8 +53,11 @@ function PasswordLogin({
   };
 
   const login = async () => {
+    // Atguigu2020
     const { phone, password } = getFieldsValue();
-    await getUser(phone, password);
+    const token = await getUser(phone, password);
+    // 将token持久化存储
+    localStorage.setItem("token", token);
     history.replace("/");
   };
 

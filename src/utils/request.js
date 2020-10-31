@@ -1,6 +1,7 @@
 // 封装axios，定义拦截器
 import axios from "axios";
 import { Toast } from "antd-mobile";
+import store from "@redux/store";
 
 const messages = {
   401: "没有权限",
@@ -18,10 +19,11 @@ const request = axios.create({
 // 请求拦截器（设置公共的请求参数、请求头）
 request.interceptors.request.use(
   (config) => {
-    // config是请求的所有信息
+    // const token = store.getState().user.token;
+    // // config是请求的所有信息
     // if (token) {
-    // config.headers['authorization'] = `Bearer ${token}`;
-    // config.headers['token'] = token;
+    //   config.headers["authorization"] = `Bearer ${token}`;
+    //   // config.headers['token'] = token;
     // }
     return config;
   }

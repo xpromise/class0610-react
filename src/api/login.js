@@ -35,3 +35,9 @@ export const reqLoginUser = (phone, password) => {
   });
 };
 
+export const reqVerifyToken = () => {
+  return request({
+    method: "POST",
+    url: `${url_prefix}/verify`,
+  });
+};
