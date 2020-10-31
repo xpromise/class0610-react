@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   NavBar,
   Icon,
@@ -10,20 +11,58 @@ import {
 import { Link } from "react-router-dom";
 import { createForm } from "rc-form";
 
+import { connect } from "react-redux";
+import { getUser } from "@redux/actions";
+
+import { phoneReg, passwordReg } from "@utils/reg";
+
 import "./index.css";
 
-function PasswordLogin({ form: { getFieldProps } }) {
- 
+function PasswordLogin({
+  form: { getFieldProps, getFieldsValue },
+  getUser,
+  history,
+}) {
+  const [isPass, setIsPass] = useState({
+    isPhonePass: false,
+    isPasswordPass: false,
+  });
 
   const validator = (rule, value, callback) => {
+    let passObj = {
+      ...isPass,
+    };
+
+    if (rule.field === "phone") {
+      if (phoneReg.test(value)) {
+        passObj.isPhonePass = true;
+      } else {
+        passObj.isPhonePass = false;
+      }
+    } else {
+      if (passwordReg.test(value)) {
+        passObj.isPasswordPass = true;
+      } else {
+        passObj.isPasswordPass = false;
+      }
+    }
+
+    setIsPass(passObj);
+
     callback();
-  }
+  };
+
+  const login = async () => {
+    const { phone, password } = getFieldsValue();
+    await getUser(phone, password);
+    history.replace("/");
+  };
 
   return (
     <div className="login container">
       <NavBar
         mode="light"
-        icon={<Icon className="icon-left" type="left" />}
+        icon={<Icon className="left" type="left" />}
         // onLeftClick={() => console.log("onLeftClick")}
       >
         硅谷注册登录
@@ -54,13 +93,7 @@ function PasswordLogin({ form: { getFieldProps } }) {
             clear
             placeholder="请输入密码"
             type="password"
-            extra={
-              <span
-                className={
-                  "iconfont icon-eye1"
-                }
-              ></span>
-            }
+            extra={<span className={"iconfont icon-eye1"}></span>}
           />
           <button
             className="login-btn-text login-btn"
@@ -72,8 +105,10 @@ function PasswordLogin({ form: { getFieldProps } }) {
         <WhiteSpace size="lg" />
         <WingBlank size="lg">
           <Button
+            disabled={!(isPass.isPhonePass && isPass.isPasswordPass)}
             type="warning"
             className="warning-btn"
+            onClick={login}
           >
             登录
           </Button>
@@ -107,4 +142,12 @@ function PasswordLogin({ form: { getFieldProps } }) {
   );
 }
 
-export default createForm()(PasswordLogin);
+// const WrappedForm = createForm()(PasswordLogin);
+// const WrappedConnect = connect()(WrappedForm);
+// export default WrappedConnect;
+
+// const WrappedConnect = connect()(PasswordLogin);
+// const WrappedForm = createForm()(WrappedConnect);
+// export default WrappedForm;
+
+export default createForm()(connect(null, { getUser })(PasswordLogin));

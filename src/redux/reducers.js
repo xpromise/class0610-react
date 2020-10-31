@@ -1,12 +1,15 @@
 import { combineReducers } from "redux";
+import { GET_USER_SUCCESS } from "./contants";
 
-function xxx(prevState = {}, action) {
+function user(prevState = {}, action) {
   switch (action.type) {
+    case GET_USER_SUCCESS:
+      return action.data;
     default:
       return prevState;
   }
 }
 
 export default combineReducers({
-  xxx,
+  user,
 });
